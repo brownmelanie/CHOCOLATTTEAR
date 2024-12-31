@@ -8,6 +8,7 @@ import FloatingButton from "../components/foatingButton.jsx";
 
 const Photos = () => {
     const [images, setImages] = useState([]);
+    const [loadedImages, setLoadedImages] = useState({});
     const carouselRef = useRef(null);
     const [isPaused, setIsPaused] = useState(false);
     const speed = 10;
@@ -32,6 +33,18 @@ const Photos = () => {
         { id: 16, artist: "Ovi"}        
 ];
 
+    const preloadImage = (url) => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                setLoadedImages(prev => ({...prev, [url]: true}));
+                resolve(url);
+            };
+            img.onerror = reject;
+            img.src = url;
+        });
+    };
+
     useEffect(() => {
         const fetchImages = async () => {
             const unsubscribe = onSnapshot(collection(db, "Photography"), (snapshot) => {
@@ -40,6 +53,17 @@ const Photos = () => {
                     ...doc.data(),
                 }));
                 setImages(fetchedImages);
+
+                fetchedImages.slice(0, 4).forEach(image => {
+                    preloadImage(image.url);
+                });
+
+                setTimeout(() => {
+                    fetchedImages.slice(4).forEach(image => {
+                        preloadImage(image.url);
+                    });
+                }, 1000);
+
             });
             return () => unsubscribe();
         };

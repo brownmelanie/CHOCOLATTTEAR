@@ -12,6 +12,19 @@ const PhotoDetails = () => {
     const [collageImages, setCollageImages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [loadedImages, setLoadedImages] = useState({});
+
+    const preloadImage = (url) => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                setLoadedImages(prev => ({...prev, [url]: true}));
+                resolve(url);
+            };
+            img.onerror = reject;
+            img.src = url;
+        });
+    };
 
     useEffect(() => {
         const fetchImageAndCollage = async () => {
@@ -27,6 +40,10 @@ const PhotoDetails = () => {
                 }
 
                 if (currentImage) {
+                    await preloadImage(currentImage.url);
+                }
+
+                if (currentImage) {
                     const collageRef = collection(db, "Photography", id, "collage");
                     const collageSnap = await getDocs(collageRef);
                     const collageData = collageSnap.docs.map(doc => ({
@@ -34,6 +51,16 @@ const PhotoDetails = () => {
                         ...doc.data()
                     }));
                     setCollageImages(collageData);
+
+                    collageData.slice(0, 2).forEach(image => {
+                        preloadImage(image.url);
+                    });
+
+                    setTimeout(() => {
+                        collageData.slice(2).forEach(image => {
+                            preloadImage(image.url);
+                        });
+                    }, 1000);
                 }
 
                 setLoading(false);
@@ -82,10 +109,16 @@ const PhotoDetails = () => {
                     animate={{ y: 0 }}
                     transition={{ delay: 0.2 }}
                 >
+                    {!loadedImages[mainImage?.url] && (
+                        <div className="w-full h-[70vh] animate-pulse bg-gray-200" />
+                    )}
                     <img
                         src={mainImage.url}
                         alt={mainImage.title}
-                        className="w-full max-h-screen object-cover shadow-lg"
+                        className={`w-full max-h-screen object-cover shadow-lg transition-opacity duration-300 ${
+                            loadedImages[mainImage?.url] ? 'opacity-100' : 'opacity-0'
+                        }`}
+                        loading="eager"
                     />
                 </motion.div>
 
@@ -122,13 +155,22 @@ const PhotoDetails = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.5 + index * 0.1 }}
                                 >
+                                    {!loadedImages[image.url] && (
+                                        <div className={`w-full animate-pulse bg-gray-200 ${
+                                            index % 2 === 0 ? 'aspect-w-4 aspect-h-3' : 'aspect-w-3 aspect-h-4'
+                                        }`} />
+                                    )}
                                     <div
                                         className={`overflow-hidden ${index % 2 === 0 ? 'aspect-w-4 aspect-h-3' : 'aspect-w-3 aspect-h-4'}`}
                                     >
                                         <img
                                             src={image.url}
                                             alt={`${mainImage.title} - ${index + 1}`}
-                                            className="w-full h-full object-cover"
+                                            className={`w-full h-full object-cover transition-opacity duration-300 ${
+                                                loadedImages[image.url] ? 'opacity-100' : 'opacity-0'
+                                            }`}
+                                            loading="lazy"
+                                            onLoad={() => setLoadedImages(prev => ({...prev, [image.url]: true}))}
                                         />
                                     </div>
                                 </motion.div>
