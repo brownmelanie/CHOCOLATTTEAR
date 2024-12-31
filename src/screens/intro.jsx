@@ -67,7 +67,7 @@ const VideoIntro = () => {
                         <source src={videoSrc} type="video/mp4" />
                     </video>
                     <div className="flex justify-center lg:justify-start lg:ml-5 xl:ml-8">
-                        <div className="mt-[-155px] grid grid-rows-4 grid-cols-2 bg-white border border-black w-72 h-32">
+                        <div className="mt-[-155px] grid grid-rows-4 grid-cols-2 bg-white backdrop-blur-none border border-black w-72 h-32">
                             <p className="col-span-2 flex items-center justify-center font-custom text-sm border-solid border-black border-b cursor-pointer xl:text-lg"> CHOCOLATTTEAR.MP4 </p>
                             <p className="col-span-2 flex items-center justify-center font-custom text-sm border-solid border-black border-b xl:text-lg"> Photography & Direction </p>
                             <button
