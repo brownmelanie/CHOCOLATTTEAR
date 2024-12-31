@@ -67,21 +67,25 @@ const VideoIntro = () => {
                         <source src={videoSrc} type="video/mp4" />
                     </video>
                     <div className="flex justify-center lg:justify-start lg:ml-5 xl:ml-8">
-                        <div className="mt-[-155px] grid grid-rows-4 grid-cols-2 bg-white backdrop-blur-none border border-black w-72 h-32">
-                            <p className="col-span-2 flex items-center justify-center font-custom text-sm border-solid border-black border-b cursor-pointer xl:text-lg"> CHOCOLATTTEAR.MP4 </p>
-                            <p className="col-span-2 flex items-center justify-center font-custom text-sm border-solid border-black border-b xl:text-lg"> Photography & Direction </p>
+                        <div className="mt-[-155px] grid grid-rows-4 grid-cols-2 border border-black w-72 h-32 bg-white relative z-10">
+                            <p className="col-span-2 flex items-center justify-center font-custom text-sm border-solid border-black border-b cursor-pointer xl:text-lg bg-white"> CHOCOLATTTEAR.MP4 </p>
+                            <p className="col-span-2 flex items-center justify-center font-custom text-sm border-solid border-black border-b xl:text-lg bg-white"> Photography & Direction </p>
                             <button
-                                onClick={handleStop}
-                                className={`font-custom border-solid border-black border-b border-e text-sm xl:text-lg z-50 ${!isPlaying ? 'opacity-50' : ''}`}
-                                disabled={!isPlaying}
+                            onClick={handleStop}
+                            className={`font-custom border-solid border-black border-b border-e text-sm xl:text-lg z-50 bg-white ${!isPlaying ? 'opacity-50' : ''}`}
+                            disabled={!isPlaying}
                             >Stop</button>
-                            <div className="flex items-center justify-center font-custom text-sm border-solid border-black border-b xl:text-lg">{date}</div>
+                                <div className="flex items-center justify-center font-custom text-sm border-solid border-black border-b xl:text-lg bg-white">
+                                    {date}
+                                </div>
                             <button
                             onClick={handlePlay}
-                            className={`font-custom border-solid border-black border-e text-sm xl:text-lg z-50 ${isPlaying ? 'opacity-50' : ''}`}
+                            className={`font-custom border-solid border-black border-e text-sm xl:text-lg z-50 bg-white ${isPlaying ? 'opacity-50' : ''}`}
                             disabled={isPlaying}
-                            > Play</button>
-                            <div className="flex items-center justify-center font-custom text-sm xl:text-lg">{time}</div>
+                            >Play</button>
+                                <div className="flex items-center justify-center font-custom text-sm xl:text-lg bg-white">
+                                    {time}
+                                </div>
                         </div>
                     </div>
                 </>
