@@ -28,27 +28,58 @@ const Photos = () => {
     };
 
     const handleTouchMove = (e) => {
+        if (!touchStart) return;
+    
+        e.preventDefault();
         setTouchEnd(e.touches[0].clientX);
+        
+        const currentTouch = e.touches[0].clientX;
+        const diff = touchStart - currentTouch;
+        
+        if (carouselRef.current) {
+            carouselRef.current.scrollTo({
+                left: carouselRef.current.scrollLeft + diff,
+                behavior: 'smooth'
+            });
+            setTouchStart(currentTouch);
+        }
     };
 
     const handleTouchEnd = () => {
         if (!touchStart || !touchEnd) return;
         
         const distance = touchStart - touchEnd;
-        const isLeftSwipe = distance > 50;
-        const isRightSwipe = distance < -50;
+        const isLeftSwipe = distance > 300;
+        const isRightSwipe = distance < -300;
 
         if (isLeftSwipe) {
-            carouselRef.current.scrollLeft += scrollAmount;
+            setIsScrolling(true);
+            setIsPaused(true);
+            
+            carouselRef.current.scrollTo({
+                left: carouselRef.current.scrollLeft + scrollAmount,
+                behavior: 'smooth'
+            });
         }
         if (isRightSwipe) {
-            carouselRef.current.scrollLeft -= scrollAmount;
+            setIsScrolling(true);
+            setIsPaused(true);
+            
+            carouselRef.current.scrollTo({
+                left: carouselRef.current.scrollLeft - scrollAmount,
+                behavior: 'smooth'
+            });
         }
 
         setTouchStart(null);
         setTouchEnd(null);
+
+        if (scrollTimeout.current) {
+            clearTimeout(scrollTimeout.current);
+        }
         
-        setTimeout(() => {
+        scrollTimeout.current = setTimeout(() => {
+            setIsScrolling(false);
             setIsPaused(false);
         }, 500);
     };
@@ -144,7 +175,7 @@ const Photos = () => {
         if (carouselElement) {
             carouselElement.addEventListener('wheel', handleScroll, { passive: false });
             carouselElement.addEventListener('touchstart', handleTouchStart);
-            carouselElement.addEventListener('touchmove', handleTouchMove);
+            carouselElement.addEventListener('touchmove', handleTouchMove, { passive: false });
             carouselElement.addEventListener('touchend', handleTouchEnd);
         }
         return () => {
@@ -220,7 +251,7 @@ const Photos = () => {
                         {[...images, ...images, ...images, ...images].map((image, index) => (
                             <div
                                 key={`${image.id}-${index}`}
-                                className="flex flex-col min-w-[400px] px-10 font-montserrat pb-12 pt-12 hover:scale-125 hover:transition-all"
+                                className="flex flex-col min-w-[400px] px-10 font-montserrat pb-12 pt-12 lg:hover:scale-125 hover:transition-all"
                                 onClick={() => handleImageClick(image)}
                             >
                                 <img
