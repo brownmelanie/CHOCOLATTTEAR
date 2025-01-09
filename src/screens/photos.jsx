@@ -31,7 +31,7 @@ const Photos = () => {
         if (!touchStart) return;
     
         const currentTouch = e.touches[0].clientX;
-        const diff = (touchStart - currentTouch) / 3;
+        const diff = (touchStart - currentTouch) / 2;
     
         if (carouselRef.current) {
             carouselRef.current.scrollBy({
@@ -190,7 +190,7 @@ const Photos = () => {
     return (
         <>
             <Navbar />
-            <div className="h-[83vh] w-screen flex items-center relative">
+            <div className="lg:h-[83vh] w-screen flex items-center relative">
                 {/* Botón izquierdo */}
                 <button 
                     onClick={scrollLeft}

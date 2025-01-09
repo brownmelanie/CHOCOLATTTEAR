@@ -19,29 +19,30 @@ const Photos = () => {
     const scrollTimeout = useRef(null);
     const [artists, setArtists] = useState([]);
 
+    const [touchStart, setTouchStart] = useState(null);
 
     useEffect(() => {
-            const unsubscribe = onSnapshot(collection(db, "Direction"), (snapshot) => {
-                const fetchedItems = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
-                setItems(fetchedItems);
-            });
-            
-            const unsubscribeArtists = onSnapshot(collection(db, "ArtistsDirection"), (snapshot) => {
-                const fetchedArtists = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    artist: doc.data().name
-                }));
-                setArtists(fetchedArtists);
-            });
+        const unsubscribe = onSnapshot(collection(db, "Direction"), (snapshot) => {
+            const fetchedItems = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setItems(fetchedItems);
+        });
 
-            return () => {
-                unsubscribe();
-                unsubscribeArtists();
-            };
-        }, []);
+        const unsubscribeArtists = onSnapshot(collection(db, "ArtistsDirection"), (snapshot) => {
+            const fetchedArtists = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                artist: doc.data().name,
+            }));
+            setArtists(fetchedArtists);
+        });
+
+        return () => {
+            unsubscribe();
+            unsubscribeArtists();
+        };
+    }, []);
 
     const handleItemClick = (item) => {
         if (item.videoUrl) {
@@ -52,110 +53,83 @@ const Photos = () => {
     };
 
     const scrollLeft = () => {
-            if (carouselRef.current) {
-                setIsScrolling(true);
-                setIsPaused(true);
-                
-                carouselRef.current.scrollTo({
-                    left: carouselRef.current.scrollLeft - scrollAmount,
-                    behavior: 'smooth'
-                });
-    
-                if (scrollTimeout.current) {
-                    clearTimeout(scrollTimeout.current);
-                }
-                
-                scrollTimeout.current = setTimeout(() => {
-                    setIsScrolling(false);
-                    setIsPaused(false);
-                }, 500);
-            }
-        };
-    
-        const scrollRight = () => {
-            if (carouselRef.current) {
-                setIsScrolling(true);
-                setIsPaused(true);
-                
-                carouselRef.current.scrollTo({
-                    left: carouselRef.current.scrollLeft + scrollAmount,
-                    behavior: 'smooth'
-                });
-    
-                if (scrollTimeout.current) {
-                    clearTimeout(scrollTimeout.current);
-                }
-                
-                scrollTimeout.current = setTimeout(() => {
-                    setIsScrolling(false);
-                    setIsPaused(false);
-                }, 500);
-            }
-        };
-    
-        // Manejador para el scroll con el mouse/touch
-        const handleScroll = useCallback((e) => {
-            if (carouselRef.current) {
-                carouselRef.current.scrollLeft += e.deltaY;
-                setIsPaused(true);
-                
-                if (scrollTimeout.current) {
-                    clearTimeout(scrollTimeout.current);
-                }
-                
-                scrollTimeout.current = setTimeout(() => {
-                    setIsPaused(false);
-                }, 500);
-            }
-        }, []);
-    
-        useEffect(() => {
-            const carouselElement = carouselRef.current;
-            if (carouselElement) {
-                carouselElement.addEventListener('wheel', handleScroll);
-            }
-            return () => {
-                if (carouselElement) {
-                    carouselElement.removeEventListener('wheel', handleScroll);
-                }
-            };
-        }, [handleScroll]);
-        
-        const handleTouch = useCallback((e) => {
-            if (carouselRef.current) {
-                setIsScrolling(true);
-                setIsPaused(true);
-            }
-        }, []);
-    
-        const handleTouchEnd = useCallback(() => {
+        if (carouselRef.current) {
+            setIsScrolling(true);
+            setIsPaused(true);
+
+            carouselRef.current.scrollTo({
+                left: carouselRef.current.scrollLeft - scrollAmount,
+                behavior: "smooth",
+            });
+
             if (scrollTimeout.current) {
                 clearTimeout(scrollTimeout.current);
             }
-            
+
             scrollTimeout.current = setTimeout(() => {
                 setIsScrolling(false);
                 setIsPaused(false);
             }, 500);
-        }, []);
-    
-        useEffect(() => {
-            const carouselElement = carouselRef.current;
-        
-            if (carouselElement) {
-                carouselElement.addEventListener('wheel', handleScroll, { passive: false });
-                carouselElement.addEventListener('touchstart', handleTouch);
-                carouselElement.addEventListener('touchend', handleTouchEnd);
+        }
+    };
+
+    const scrollRight = () => {
+        if (carouselRef.current) {
+            setIsScrolling(true);
+            setIsPaused(true);
+
+            carouselRef.current.scrollTo({
+                left: carouselRef.current.scrollLeft + scrollAmount,
+                behavior: "smooth",
+            });
+
+            if (scrollTimeout.current) {
+                clearTimeout(scrollTimeout.current);
             }
-        
-            return () => {
-                if (carouselElement) {
-                    carouselElement.removeEventListener('wheel', handleScroll, { passive: false });
-                    carouselElement.removeEventListener('touchstart', handleTouch);
-                    carouselElement.removeEventListener('touchend', handleTouchEnd);
-                }
-            };
-        }, [ handleTouch, handleTouchEnd]);
+
+            scrollTimeout.current = setTimeout(() => {
+                setIsScrolling(false);
+                setIsPaused(false);
+            }, 500);
+        }
+    };
+
+    const handleTouchStart = (e) => {
+        setTouchStart(e.touches[0].clientX);
+    };
+
+    const handleTouchMove = (e) => {
+        if (!touchStart || !carouselRef.current) return;
+
+        const currentTouch = e.touches[0].clientX;
+        const diff = (touchStart - currentTouch) / 3; // Factor de desaceleración
+        carouselRef.current.scrollBy({
+            left: diff,
+        });
+        setTouchStart(currentTouch); // Actualiza la posición táctil
+    };
+
+    const handleTouchEnd = () => {
+        setTouchStart(null); // Restablece el estado táctil
+    };
+
+    useEffect(() => {
+        const carouselElement = carouselRef.current;
+
+        if (carouselElement) {
+            carouselElement.addEventListener("touchstart", handleTouchStart);
+            carouselElement.addEventListener("touchmove", handleTouchMove);
+            carouselElement.addEventListener("touchend", handleTouchEnd);
+        }
+
+        return () => {
+            if (carouselElement) {
+                carouselElement.removeEventListener("touchstart", handleTouchStart);
+                carouselElement.removeEventListener("touchmove", handleTouchMove);
+                carouselElement.removeEventListener("touchend", handleTouchEnd);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         let interval;
@@ -176,25 +150,27 @@ const Photos = () => {
     }, [isPaused]);
 
     return (
-        <>
+        <div className="h-screen">
             <Navbar />
-            <div className="h-[83vh] w-screen flex items-center">
+            <div className="lg:h-[83vh] w-screen flex items-center">
                 {/* Botón izquierdo */}
-                <button 
+                <button
                     onClick={scrollLeft}
                     className="absolute left-4 z-10 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors"
                     aria-label="Scroll left"
                 >
                     <ChevronLeft className="w-6 h-6" />
                 </button>
-                
+
                 <div
                     className="relative overflow-hidden w-screen group"
                     ref={carouselRef}
                 >
-                    <div className="flex flex-row justify-center space-x-4 items-center"
+                    <div
+                        className="flex flex-row justify-center space-x-4 items-center"
                         onMouseEnter={() => setIsPaused(true)}
-                        onMouseLeave={() => setIsPaused(false)}>
+                        onMouseLeave={() => setIsPaused(false)}
+                    >
                         {[...items, ...items, ...items, ...items].map((item, index) => (
                             <div
                                 key={`${item.id}-${index}`}
@@ -204,9 +180,9 @@ const Photos = () => {
                                 <img
                                     src={
                                         item.videoUrl
-                                            ? `https://img.youtube.com/vi/${new URL(item.videoUrl).searchParams.get(
-                                                    "v"
-                                                )}/0.jpg`
+                                            ? `https://img.youtube.com/vi/${new URL(
+                                                  item.videoUrl
+                                              ).searchParams.get("v")}/0.jpg`
                                             : item.url
                                     }
                                     alt={item.title || `Carrusel ${index}`}
@@ -222,7 +198,7 @@ const Photos = () => {
                     </div>
                 </div>
                 {/* Botón derecho */}
-                <button 
+                <button
                     onClick={scrollRight}
                     className="absolute right-4 z-10 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors"
                     aria-label="Scroll right"
@@ -233,15 +209,20 @@ const Photos = () => {
 
             <div className="overflow-hidden flex">
                 <ul className="flex gap-10 text-black py-4 animate-infinite-scroll">
-                {[...artists, ...artists, ...artists, ...artists].map((artist, index) => (
-                <li key={`${artist.id}-artist-${index}`} className="flex gap-2 items-center min-w-24">
-                    <p className="text-black font-mono">{artist.artist || ""}</p>
-                </li>
-                ))}
+                    {[...artists, ...artists, ...artists, ...artists].map(
+                        (artist, index) => (
+                            <li
+                                key={`${artist.id}-artist-${index}`}
+                                className="flex gap-2 items-center min-w-24"
+                            >
+                                <p className="text-black font-mono">{artist.artist || ""}</p>
+                            </li>
+                        )
+                    )}
                 </ul>
             </div>
-            <FloatingButton/>
-        </>
+            <FloatingButton />
+        </div>
     );
 };
 
