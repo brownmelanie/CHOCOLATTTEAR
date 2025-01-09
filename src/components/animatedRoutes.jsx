@@ -10,6 +10,7 @@ import Merch from "../screens/merch.jsx";
 import Login from "../screens/loginFirebase.jsx";
 import ImageUpload from "../screens/formFirebase.jsx";
 import PhotoDetails from "../screens/photoDetail.jsx";
+import Prints from "../screens/prints.jsx";
 
 import AnimatedPage from "./animatedPage.jsx";
 
@@ -64,6 +65,14 @@ const AnimatedRoutes = () => {
             element={
                 <AnimatedPage>
                 <About />
+                </AnimatedPage>
+            }
+            />
+             <Route
+            path="/prints"
+            element={
+                <AnimatedPage>
+                <Prints />
                 </AnimatedPage>
             }
             />

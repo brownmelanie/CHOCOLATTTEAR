@@ -36,7 +36,7 @@ const NavbarDark = () => {
 
             <button
             onClick={toggleMenu}
-            className= {`lg:hidden z-40 bg-transparent rounded-full border-solid border-2 w-16 h-9 flex items-center justify-center ${isMenuOpen ? 'border-[#252525]' : 'border-white'}`}
+            className= {`lg:hidden z-40 bg-transparent rounded-full border-solid border-2 w-16 h-9 flex items-center justify-center ${isMenuOpen ? 'border-[#181818]' : 'border-white'}`}
             >
             <img 
                 src={isMenuOpen ? closeIcon : burguerIcon}
@@ -72,7 +72,7 @@ const NavbarDark = () => {
         
 
         <div
-            className={`fixed top-0 right-0 h-full w-4/5 bg-white text-[#252525] transition-transform transform z-50 ${
+            className={`fixed top-0 right-0 h-full w-4/5 bg-white text-[#252525] transition-transform transform z-30 ${
             isMenuOpen ? 'translate-x-0 transition-transform transform' : 'translate-x-full transition-transform transform'
             } z-30`}
         >

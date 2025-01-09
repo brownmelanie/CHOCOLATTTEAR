@@ -16,7 +16,7 @@ const FloatingButton = () => {
                     flex items-center justify-center
                     transition-all duration-300 
                     hover:scale-110
-                    z-50"
+                    z-20"
         aria-label="Contact Form"
         >
             <svg 

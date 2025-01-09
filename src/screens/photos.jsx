@@ -9,7 +9,10 @@ import FloatingButton from "../components/foatingButton.jsx";
 
 const Photos = () => {
     const [images, setImages] = useState([]);
-    const [loadedImages, setLoadedImages] = useState({});
+    const [artists, setArtists] = useState([]);
+    const [touchStart, setTouchStart] = useState(null);
+    const [touchEnd, setTouchEnd] = useState(null);
+
     const navigate = useNavigate();
 
     const carouselRef = useRef(null);
@@ -19,61 +22,60 @@ const Photos = () => {
     const [isScrolling, setIsScrolling] = useState(false);
     const scrollTimeout = useRef(null);
 
-    const artists = [
-        { id: 1, artist: "Gini" },
-        { id: 2, artist: "Anacri" },
-        { id: 3, artist: "Jowel&Randy" },
-        { id: 4, artist: "Soucream" },
-        { id: 5, artist: "Boscan" },
-        { id: 6, artist: "Anuel" },
-        { id: 7, artist: "Ozuna"},
-        { id: 8, artist: "Deivi"},
-        { id: 9, artist: "Poli"},
-        { id: 10, artist: "Lil Supa"},
-        { id: 11, artist: "Llanes"},
-        { id: 12, artist: "Lunay"},
-        { id: 13, artist: "SMOKEGSS"},
-        { id: 14, artist: "MJ Nebrada"},
-        { id: 15, artist: "Akapellah"},
-        { id: 16, artist: "Ovi"}        
-    ];
+    const handleTouchStart = (e) => {
+        setTouchStart(e.touches[0].clientX);
+        setIsPaused(true);
+    };
 
-    const preloadImage = (url) => {
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.onload = () => {
-                setLoadedImages(prev => ({...prev, [url]: true}));
-                resolve(url);
-            };
-            img.onerror = reject;
-            img.src = url;
-        });
+    const handleTouchMove = (e) => {
+        setTouchEnd(e.touches[0].clientX);
+    };
+
+    const handleTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+        
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > 50;
+        const isRightSwipe = distance < -50;
+
+        if (isLeftSwipe) {
+            carouselRef.current.scrollLeft += scrollAmount;
+        }
+        if (isRightSwipe) {
+            carouselRef.current.scrollLeft -= scrollAmount;
+        }
+
+        setTouchStart(null);
+        setTouchEnd(null);
+        
+        setTimeout(() => {
+            setIsPaused(false);
+        }, 500);
     };
 
     useEffect(() => {
-        const fetchImages = async () => {
-            const unsubscribe = onSnapshot(collection(db, "Photography"), (snapshot) => {
-                const fetchedImages = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
-                setImages(fetchedImages);
+        const unsubscribeImages = onSnapshot(collection(db, "Photography"), (snapshot) => {
+            const fetchedImages = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setImages(fetchedImages);
+        });
 
-                fetchedImages.slice(0, 4).forEach(image => {
-                    preloadImage(image.url);
-                });
+        const unsubscribeArtists = onSnapshot(collection(db, "ArtistsPhotography"), (snapshot) => {
+            const fetchedArtists = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                artist: doc.data().name
+            }));
+            setArtists(fetchedArtists);
+        });
 
-                setTimeout(() => {
-                    fetchedImages.slice(4).forEach(image => {
-                        preloadImage(image.url);
-                    });
-                }, 1000);
-            });
-            return () => unsubscribe();
+        return () => {
+            unsubscribeImages();
+            unsubscribeArtists();
         };
-
-        fetchImages();
     }, []);
+
 
     const handleImageClick = (image) => {
         navigate(`/details/${image.id}`, { state: image });
@@ -140,50 +142,38 @@ const Photos = () => {
     useEffect(() => {
         const carouselElement = carouselRef.current;
         if (carouselElement) {
-            carouselElement.addEventListener('wheel', handleScroll);
+            carouselElement.addEventListener('wheel', handleScroll, { passive: false });
+            carouselElement.addEventListener('touchstart', handleTouchStart);
+            carouselElement.addEventListener('touchmove', handleTouchMove);
+            carouselElement.addEventListener('touchend', handleTouchEnd);
         }
         return () => {
             if (carouselElement) {
-                carouselElement.removeEventListener('wheel', handleScroll);
+                carouselElement.removeEventListener('wheel', handleScroll, { passive: false });
+                carouselElement.removeEventListener('touchstart', handleTouchStart);
+                carouselElement.removeEventListener('touchmove', handleTouchMove);
+                carouselElement.removeEventListener('touchend', handleTouchEnd);
             }
         };
-    }, [handleScroll]);
-    
-    const handleTouch = useCallback((e) => {
-        if (carouselRef.current) {
-            setIsScrolling(true);
-            setIsPaused(true);
-        }
-    }, []);
-
-    const handleTouchEnd = useCallback(() => {
-        if (scrollTimeout.current) {
-            clearTimeout(scrollTimeout.current);
-        }
-        
-        scrollTimeout.current = setTimeout(() => {
-            setIsScrolling(false);
-            setIsPaused(false);
-        }, 500);
-    }, []);
+    }, [handleScroll, handleTouchStart, handleTouchMove, handleTouchEnd]);
 
     useEffect(() => {
         const carouselElement = carouselRef.current;
     
         if (carouselElement) {
             carouselElement.addEventListener('wheel', handleScroll, { passive: false });
-            carouselElement.addEventListener('touchstart', handleTouch);
+            carouselElement.addEventListener('touchstart', handleTouchStart);
             carouselElement.addEventListener('touchend', handleTouchEnd);
         }
     
         return () => {
             if (carouselElement) {
                 carouselElement.removeEventListener('wheel', handleScroll, { passive: false });
-                carouselElement.removeEventListener('touchstart', handleTouch);
+                carouselElement.removeEventListener('touchstart', handleTouchStart);
                 carouselElement.removeEventListener('touchend', handleTouchEnd);
             }
         };
-    }, [ handleTouch, handleTouchEnd]);
+    }, [ handleTouchStart, handleTouchEnd]);
 
     useEffect(() => {
         let interval;
@@ -210,7 +200,7 @@ const Photos = () => {
                 {/* Botón izquierdo */}
                 <button 
                     onClick={scrollLeft}
-                    className="absolute left-4 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors"
+                    className="absolute left-4 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors z-50 hidden lg:block"
                     aria-label="Scroll left"
                 >
                     <ChevronLeft className="w-6 h-6" />
@@ -220,6 +210,9 @@ const Photos = () => {
                     className="relative overflow-hidden w-screen group"
                     ref={carouselRef}
                     onWheel={handleScroll}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
                 >
                     <div className="flex flex-row justify-center space-x-4 items-center"
                         onMouseEnter={() => setIsPaused(true)}
@@ -249,7 +242,7 @@ const Photos = () => {
                 {/* Botón derecho */}
                 <button 
                     onClick={scrollRight}
-                    className="absolute right-4 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors"
+                    className="absolute right-4 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors hidden lg:block"
                     aria-label="Scroll right"
                 >
                     <ChevronRight className="w-6 h-6" />

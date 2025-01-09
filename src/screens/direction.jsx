@@ -9,7 +9,6 @@ import FloatingButton from "../components/foatingButton.jsx";
 
 const Photos = () => {
     const [items, setItems] = useState([]);
-    const [loadedImages, setLoadedImages] = useState({});
     const navigate = useNavigate();
 
     const carouselRef = useRef(null);
@@ -18,29 +17,10 @@ const Photos = () => {
     const scrollAmount = 300;
     const [isScrolling, setIsScrolling] = useState(false);
     const scrollTimeout = useRef(null);
+    const [artists, setArtists] = useState([]);
 
-    const artists = [
-        { id: 1, artist: "Soucream" },
-        { id: 2, artist: "JackÖ" },
-        { id: 3, artist: "SMOKEGSS" },
-        { id: 4, artist: "MJ Nebreda" },
-        { id: 5, artist: "Chigua" }      
-    ];
-
-    const preloadImage = (url) => {
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.onload = () => {
-                setLoadedImages(prev => ({...prev, [url]: true}));
-                resolve(url);
-            };
-            img.onerror = reject;
-            img.src = url;
-        });
-    };
 
     useEffect(() => {
-        const fetchItems = async () => {
             const unsubscribe = onSnapshot(collection(db, "Direction"), (snapshot) => {
                 const fetchedItems = snapshot.docs.map((doc) => ({
                     id: doc.id,
@@ -48,11 +28,20 @@ const Photos = () => {
                 }));
                 setItems(fetchedItems);
             });
-            return () => unsubscribe();
-        };
+            
+            const unsubscribeArtists = onSnapshot(collection(db, "ArtistsDirection"), (snapshot) => {
+                const fetchedArtists = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    artist: doc.data().name
+                }));
+                setArtists(fetchedArtists);
+            });
 
-        fetchItems();
-    }, []);
+            return () => {
+                unsubscribe();
+                unsubscribeArtists();
+            };
+        }, []);
 
     const handleItemClick = (item) => {
         if (item.videoUrl) {

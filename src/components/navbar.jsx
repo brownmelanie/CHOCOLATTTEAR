@@ -7,7 +7,6 @@ import burguerIcon from "../assets/menu-icon.png"
 import wpIcon from "../assets/wp-icon.png"
 import igIcon from "../assets/ig-icon.png"
 import emailIcon from "../assets/email-icon.png"
-import { label } from 'motion/react-client';
 
 const Navbar = () => {
   const location = useLocation();
@@ -40,7 +39,7 @@ const Navbar = () => {
 
             <button
             onClick={toggleMenu}
-            className= {`z-20 bg-transparent rounded-full border-solid border-2 w-16 h-9 flex items-center justify-center lg:hidden ${isMenuOpen ? 'border-white' : 'border-[#252525]'}`}
+            className= {`z-40 bg-transparent rounded-full border-solid border-2 w-16 h-9 flex items-center justify-center lg:hidden ${isMenuOpen ? 'border-white' : 'border-[#252525]'}`}
             >
             <img 
                 src={isMenuOpen ? closeIcon : burguerIcon}
@@ -56,7 +55,7 @@ const Navbar = () => {
                 { label: 'PHOTOS', route: '/photos' },
                 { label: 'DIRECTION', route: '/direction' },
                 { label: 'ABOUT ME', route: '/about' },
-                { label: 'PRINTS', route: '/' },
+                { label: 'PRINTS', route: '/prints' },
                 { label: 'MERCHㅤ', route: '/merch' }
                 ].map((item, index) => (
                 <li 
@@ -76,7 +75,7 @@ const Navbar = () => {
         </div>
 
         <div
-            className={`fixed top-0 right-0 h-full w-4/5 bg-[#101010] text-white transition-transform transform lg:hidden ${
+            className={`fixed top-0 right-0 h-full w-4/5 bg-[#101010] text-white transition-transform transform z-30 lg:hidden ${
             isMenuOpen ? 'translate-x-0 transition-transform transform' : 'translate-x-full transition-transform transform'
             } z-10`}
         >
@@ -93,7 +92,7 @@ const Navbar = () => {
                 ABOUT ME
                 <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-white transition-all duration-300 group-hover:w-full"></span>
             </li>
-            <li className="cursor-pointer relative group" onClick={() => handleNavigation('/')}>
+            <li className="cursor-pointer relative group" onClick={() => handleNavigation('/prints')}>
                 PRINTS
                 <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-white transition-all duration-300 group-hover:w-full"></span>
             </li>
