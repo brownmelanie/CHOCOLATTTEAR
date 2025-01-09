@@ -30,58 +30,21 @@ const Photos = () => {
     const handleTouchMove = (e) => {
         if (!touchStart) return;
     
-        e.preventDefault();
-        setTouchEnd(e.touches[0].clientX);
-        
         const currentTouch = e.touches[0].clientX;
         const diff = touchStart - currentTouch;
-        
+    
         if (carouselRef.current) {
-            carouselRef.current.scrollTo({
-                left: carouselRef.current.scrollLeft + diff,
-                behavior: 'smooth'
+            carouselRef.current.scrollBy({
+                left: diff,
             });
             setTouchStart(currentTouch);
         }
     };
 
     const handleTouchEnd = () => {
-        if (!touchStart || !touchEnd) return;
-        
-        const distance = touchStart - touchEnd;
-        const isLeftSwipe = distance > 300;
-        const isRightSwipe = distance < -300;
-
-        if (isLeftSwipe) {
-            setIsScrolling(true);
-            setIsPaused(true);
-            
-            carouselRef.current.scrollTo({
-                left: carouselRef.current.scrollLeft + scrollAmount,
-                behavior: 'smooth'
-            });
-        }
-        if (isRightSwipe) {
-            setIsScrolling(true);
-            setIsPaused(true);
-            
-            carouselRef.current.scrollTo({
-                left: carouselRef.current.scrollLeft - scrollAmount,
-                behavior: 'smooth'
-            });
-        }
-
         setTouchStart(null);
         setTouchEnd(null);
-
-        if (scrollTimeout.current) {
-            clearTimeout(scrollTimeout.current);
-        }
-        
-        scrollTimeout.current = setTimeout(() => {
-            setIsScrolling(false);
-            setIsPaused(false);
-        }, 500);
+        setIsPaused(false);
     };
 
     useEffect(() => {
