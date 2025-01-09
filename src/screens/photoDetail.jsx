@@ -4,6 +4,7 @@ import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import Navbar from '../components/navbar';
 import { motion } from 'framer-motion';
+import Loader from '../components/loader';
 
 const PhotoDetails = () => {
     const { id } = useParams();
@@ -77,9 +78,7 @@ const PhotoDetails = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900"></div>
-            </div>
+            <Loader/>
         );
     }
 

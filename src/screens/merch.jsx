@@ -40,13 +40,15 @@ const Merch = () => {
                     {products.map((product) => (
                         <div 
                             key={product.id} 
-                            className="flex-1 overflow-hidden m-[50px]"
+                            className="flex-1 overflow-hidden mx-[50px] cursor-pointer"
+                            onClick={() => window.location.href = product.shopUrl}
                         >
                             <div className="flex justify-center overflow-hidden">
                                 <img
                                     src={product.image}
                                     alt={product.title}
                                     className="w-3/4 h-full object-cover transition-transform duration-300 hover:scale-105"
+
                                 />
                             </div>
                             

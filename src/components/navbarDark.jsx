@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 import homeIcon from '../assets/icon-logo.png'
 import closeIcon from "../assets/menu-close-dark.png"
@@ -45,40 +45,34 @@ const NavbarDark = () => {
             />
             </button>
 
-            <div className='hidden lg:block lg:w-[547px] lg:border-2 lg:border-solid lg:border-white lg:rounded-full lg:font-custom lg:text-white'>
-            <ul className='lg:flex lg:flex-row lg:justify-around lg:items-center'>
+            <div className='hidden lg:block lg:border-2 lg:border-solid lg:border-white lg:rounded-full lg:font-custom'>
+            <ul className='lg:flex lg:flex-row lg:gap-[16px] lg:items-center lg:text-[1vw] whitespace-nowrap text-white'>
+                {[
+                { label: 'HOME', route: '/home' },
+                { label: 'PHOTOS', route: '/photos' },
+                { label: 'DIRECTION', route: '/direction' },
+                { label: 'ABOUT ME', route: '/about' },
+                { label: 'PRINTS', route: '/' },
+                { label: 'MERCHㅤ', route: '/merch' }
+                ].map((item, index) => (
                 <li 
-                onClick={() => handleNavigation('/home')}
-                className={`${isActive('/home') ? 'bg-white text-[#252525] py-[4px] rounded-3xl w-[100px] text-center ml-[-22px] lg:border-2 lg:border-solid lg:border-white lg:cursor-pointer' : ''} `}>
-                    HOME
+                key={index}
+                className={` ${
+                    isActive(item.route)
+                    ? 'bg-white text-[#252525] py-[4px] rounded-3xl px-5 text-center lg:border-2 lg:border-solid lg:border-white'
+                    : 'px-6 mr-[-14px] py-[5px]'
+                }`}
+                >
+                <Link to={item.route}>{item.label}</Link>
                 </li>
-                <li 
-                onClick={() => handleNavigation('/photos')}
-                className={`${isActive('/photos') ? 'bg-white text-[#252525] py-[4px] rounded-3xl px-5 text-center lg:border-2 lg:border-solid lg:border-white' : ''}`} >
-                    PHOTOS
-                </li>
-                <li 
-                onClick={() => handleNavigation('/direction')}
-                className={`${isActive('/direction') ? 'bg-white text-[#252525] py-[4px] rounded-3xl px-5 text-center lg:border-2 lg:border-solid lg:border-white' : ''}`}>
-                    DIRECTION
-                </li>
-                <li 
-                onClick={() => handleNavigation('/about')}
-                className={`${isActive('/about') ? 'bg-white text-[#252525] py-[4px] rounded-3xl px-5 text-center lg:border-2 lg:border-solid lg:border-white' : ''}`}>
-                    ABOUT ME
-                </li>
-                <li 
-                onClick={() => handleNavigation('/merch')}
-                className={`${isActive('/merch') ? 'bg-white tex-[#252525] py-[4px] rounded-3xl px-5 text-center lg:border-2 lg:border-solid lg:border-white mr-[-23px]' : ''}`}>
-                    MERCH
-                </li>
+                ))}
             </ul>
             </div>
         </div>
         
 
         <div
-            className={`fixed top-0 right-0 h-full w-4/5 bg-white text-[#252525] transition-transform transform ${
+            className={`fixed top-0 right-0 h-full w-4/5 bg-white text-[#252525] transition-transform transform z-50 ${
             isMenuOpen ? 'translate-x-0 transition-transform transform' : 'translate-x-full transition-transform transform'
             } z-30`}
         >
@@ -93,6 +87,10 @@ const NavbarDark = () => {
             </li>
             <li className="cursor-pointer relative group" onClick={() => handleNavigation('/about')}>
                 ABOUT ME
+                <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-[#252525] transition-all duration-300 group-hover:w-full"></span>
+            </li>
+            <li className="cursor-pointer relative group" onClick={() => handleNavigation('/')}>
+                PRINTS
                 <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-[#252525] transition-all duration-300 group-hover:w-full"></span>
             </li>
             <li className="cursor-pointer relative group" onClick={() => handleNavigation('/merch')}>

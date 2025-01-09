@@ -7,6 +7,7 @@ import burguerIcon from "../assets/menu-icon.png"
 import wpIcon from "../assets/wp-icon.png"
 import igIcon from "../assets/ig-icon.png"
 import emailIcon from "../assets/email-icon.png"
+import { label } from 'motion/react-client';
 
 const Navbar = () => {
   const location = useLocation();
@@ -32,7 +33,7 @@ const Navbar = () => {
         <div className='flex justify-between items-center px-4 h-16 lg:px-8 lg:pt-5'>
             <button
             onClick={() => handleNavigation('/home')}
-            className="bg-[#252525] rounded-full py-2 px-4 lg:px-8 lg:cursor-pointer lg:hover:bg-black"
+            className="bg-[#101010] rounded-full py-2 px-4 lg:px-8 lg:cursor-pointer lg:hover:bg-black"
             >
                 <img src={homeIcon} alt="Home" className="h-5 w-auto" />
             </button>
@@ -48,20 +49,21 @@ const Navbar = () => {
             />
             </button>
 
-            <div className='hidden lg:block lg:w-[547px] lg:border-2 lg:border-solid lg:border-[#252525] lg:rounded-full lg:font-custom lg:text'>
-            <ul className='lg:flex lg:flex-row lg:gap-[16px] lg:items-center'>
+            <div className='hidden lg:block lg:border-2 lg:border-solid lg:border-[#252525] lg:rounded-full lg:font-custom'>
+            <ul className='lg:flex lg:flex-row lg:gap-[16px] lg:items-center lg:text-[1vw] whitespace-nowrap'>
                 {[
                 { label: 'HOME', route: '/home' },
                 { label: 'PHOTOS', route: '/photos' },
                 { label: 'DIRECTION', route: '/direction' },
                 { label: 'ABOUT ME', route: '/about' },
-                { label: 'MERCH', route: '/merch' }
+                { label: 'PRINTS', route: '/' },
+                { label: 'MERCHㅤ', route: '/merch' }
                 ].map((item, index) => (
                 <li 
                 key={index}
                 className={` ${
                     isActive(item.route)
-                    ? 'bg-[#252525] text-white py-[4px] rounded-3xl px-5 text-center lg:border-2 lg:border-solid lg:border-[#252525]'
+                    ? 'bg-[#101010] text-white py-[4px] rounded-3xl px-5 text-center lg:border-2 lg:border-solid lg:border-[#252525]'
                     : 'px-6 mr-[-14px] py-[5px]'
                 }`}
                 >
@@ -74,7 +76,7 @@ const Navbar = () => {
         </div>
 
         <div
-            className={`fixed top-0 right-0 h-full w-4/5 bg-[#252525] text-white transition-transform transform lg:hidden ${
+            className={`fixed top-0 right-0 h-full w-4/5 bg-[#101010] text-white transition-transform transform lg:hidden ${
             isMenuOpen ? 'translate-x-0 transition-transform transform' : 'translate-x-full transition-transform transform'
             } z-10`}
         >
@@ -89,6 +91,10 @@ const Navbar = () => {
             </li>
             <li className="cursor-pointer relative group" onClick={() => handleNavigation('/about')}>
                 ABOUT ME
+                <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-white transition-all duration-300 group-hover:w-full"></span>
+            </li>
+            <li className="cursor-pointer relative group" onClick={() => handleNavigation('/')}>
+                PRINTS
                 <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-white transition-all duration-300 group-hover:w-full"></span>
             </li>
             <li className="cursor-pointer relative group" onClick={() => handleNavigation('/merch')}>

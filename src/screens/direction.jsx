@@ -244,7 +244,7 @@ const Photos = () => {
 
             <div className="overflow-hidden flex">
                 <ul className="flex gap-10 text-black py-4 animate-infinite-scroll">
-                {[...artists, ...artists, ...artists].map((artist, index) => (
+                {[...artists, ...artists, ...artists, ...artists].map((artist, index) => (
                 <li key={`${artist.id}-artist-${index}`} className="flex gap-2 items-center min-w-24">
                     <p className="text-black font-mono">{artist.artist || ""}</p>
                 </li>
