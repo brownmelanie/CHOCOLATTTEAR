@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebaseConfig.js";
 import { useNavigate } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import Navbar from "../components/navbar.jsx";
 import FloatingButton from "../components/foatingButton.jsx";
@@ -9,10 +10,14 @@ import FloatingButton from "../components/foatingButton.jsx";
 const Photos = () => {
     const [images, setImages] = useState([]);
     const [loadedImages, setLoadedImages] = useState({});
+    const navigate = useNavigate();
+
     const carouselRef = useRef(null);
     const [isPaused, setIsPaused] = useState(false);
     const speed = 10;
-    const navigate = useNavigate();
+    const scrollAmount = 300;
+    const [isScrolling, setIsScrolling] = useState(false);
+    const scrollTimeout = useRef(null);
 
     const artists = [
         { id: 1, artist: "Gini" },
@@ -31,7 +36,7 @@ const Photos = () => {
         { id: 14, artist: "MJ Nebrada"},
         { id: 15, artist: "Akapellah"},
         { id: 16, artist: "Ovi"}        
-];
+    ];
 
     const preloadImage = (url) => {
         return new Promise((resolve, reject) => {
@@ -63,7 +68,6 @@ const Photos = () => {
                         preloadImage(image.url);
                     });
                 }, 1000);
-
             });
             return () => unsubscribe();
         };
@@ -74,6 +78,112 @@ const Photos = () => {
     const handleImageClick = (image) => {
         navigate(`/details/${image.id}`, { state: image });
     };
+
+    const scrollLeft = () => {
+        if (carouselRef.current) {
+            setIsScrolling(true);
+            setIsPaused(true);
+            
+            carouselRef.current.scrollTo({
+                left: carouselRef.current.scrollLeft - scrollAmount,
+                behavior: 'smooth'
+            });
+
+            if (scrollTimeout.current) {
+                clearTimeout(scrollTimeout.current);
+            }
+            
+            scrollTimeout.current = setTimeout(() => {
+                setIsScrolling(false);
+                setIsPaused(false);
+            }, 500);
+        }
+    };
+
+    const scrollRight = () => {
+        if (carouselRef.current) {
+            setIsScrolling(true);
+            setIsPaused(true);
+            
+            carouselRef.current.scrollTo({
+                left: carouselRef.current.scrollLeft + scrollAmount,
+                behavior: 'smooth'
+            });
+
+            if (scrollTimeout.current) {
+                clearTimeout(scrollTimeout.current);
+            }
+            
+            scrollTimeout.current = setTimeout(() => {
+                setIsScrolling(false);
+                setIsPaused(false);
+            }, 500);
+        }
+    };
+
+    // Manejador para el scroll con el mouse/touch
+    const handleScroll = useCallback((e) => {
+        if (carouselRef.current) {
+            carouselRef.current.scrollLeft += e.deltaY;
+            setIsPaused(true);
+            
+            if (scrollTimeout.current) {
+                clearTimeout(scrollTimeout.current);
+            }
+            
+            scrollTimeout.current = setTimeout(() => {
+                setIsPaused(false);
+            }, 500);
+        }
+    }, []);
+
+    useEffect(() => {
+        const carouselElement = carouselRef.current;
+        if (carouselElement) {
+            carouselElement.addEventListener('wheel', handleScroll);
+        }
+        return () => {
+            if (carouselElement) {
+                carouselElement.removeEventListener('wheel', handleScroll);
+            }
+        };
+    }, [handleScroll]);
+    
+    const handleTouch = useCallback((e) => {
+        if (carouselRef.current) {
+            setIsScrolling(true);
+            setIsPaused(true);
+        }
+    }, []);
+
+    const handleTouchEnd = useCallback(() => {
+        if (scrollTimeout.current) {
+            clearTimeout(scrollTimeout.current);
+        }
+        
+        scrollTimeout.current = setTimeout(() => {
+            setIsScrolling(false);
+            setIsPaused(false);
+        }, 500);
+    }, []);
+
+    useEffect(() => {
+        const carouselElement = carouselRef.current;
+    
+        if (carouselElement) {
+            carouselElement.addEventListener('wheel', handleScroll, { passive: false });
+            carouselElement.addEventListener('touchstart', handleTouch);
+            carouselElement.addEventListener('touchend', handleTouchEnd);
+        }
+    
+        return () => {
+            if (carouselElement) {
+                carouselElement.removeEventListener('wheel', handleScroll, { passive: false });
+                carouselElement.removeEventListener('touchstart', handleTouch);
+                carouselElement.removeEventListener('touchend', handleTouchEnd);
+            }
+        };
+    }, [ handleTouch, handleTouchEnd]);
 
     useEffect(() => {
         let interval;
@@ -96,43 +206,63 @@ const Photos = () => {
     return (
         <>
             <Navbar />
-            <div className="h-[83vh] w-screen flex items-center">
+            <div className="h-[83vh] w-screen flex items-center relative">
+                {/* Botón izquierdo */}
+                <button 
+                    onClick={scrollLeft}
+                    className="absolute left-4 z-10 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors"
+                    aria-label="Scroll left"
+                >
+                    <ChevronLeft className="w-6 h-6" />
+                </button>
+
                 <div
                     className="relative overflow-hidden w-screen group"
                     ref={carouselRef}
-                    onMouseEnter={() => setIsPaused(true)}
-                    onMouseLeave={() => setIsPaused(false)}
+                    onWheel={handleScroll}
                 >
-                    <div className="flex flex-row justify-center space-x-4">
+                    <div className="flex flex-row justify-center space-x-4 items-center"
+                        onMouseEnter={() => setIsPaused(true)}
+                        onMouseLeave={() => setIsPaused(false)}>
                         {[...images, ...images, ...images, ...images].map((image, index) => (
                             <div
                                 key={`${image.id}-${index}`}
-                                className="flex flex-col min-w-80 px-10 font-montserrat pb-14 hover:scale-125 hover:transition-all"
+                                className="flex flex-col min-w-[400px] px-10 font-montserrat pb-12 pt-12 hover:scale-125 hover:transition-all"
                                 onClick={() => handleImageClick(image)}
                             >
                                 <img
                                     src={image.url}
                                     alt={image.title || `Carrusel ${index}`}
-                                    className="w-auto object-cover transition-transform transform pt-14"
+                                    className="w-auto object-cover transition-transform transform max-h-[400px]"
+                                    draggable="false"
                                 />
                                 <div className="flex flex-row items-center justify-between">
-                                    <p className="text-xl">{image.title || "Sin título"}</p>
-                                    <p className="text-xs font-mono">{image.date || "Fecha no disponible"}</p>
+                                    <p className="text-xl">{image.title || ""}</p>
+                                    <p className="text-xs font-mono">{image.date || ""}</p>
                                 </div>
                                 <p>{image.artist || ""}</p>
                             </div>
                         ))}
                     </div>
                 </div>
+
+                {/* Botón derecho */}
+                <button 
+                    onClick={scrollRight}
+                    className="absolute right-4 z-10 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors"
+                    aria-label="Scroll right"
+                >
+                    <ChevronRight className="w-6 h-6" />
+                </button>
             </div>
 
             <div className="overflow-hidden flex">
                 <ul className="flex gap-10 text-black py-4 animate-infinite-scroll">
-                {[...artists, ...artists, ...artists].map((artist, index) => (
-                <li key={`${artist.id}-artist-${index}`} className="flex gap-2 items-center min-w-24">
-                    <p className="text-black font-mono">{artist.artist || "Artista desconocido"}</p>
-                </li>
-                ))}
+                    {[...artists, ...artists, ...artists].map((artist, index) => (
+                        <li key={`${artist.id}-artist-${index}`} className="flex gap-2 items-center min-w-24">
+                            <p className="text-black font-mono">{artist.artist || ""}</p>
+                        </li>
+                    ))}
                 </ul>
             </div>
             <FloatingButton/>
@@ -141,114 +271,3 @@ const Photos = () => {
 };
 
 export default Photos;
-
-
-
-/*
-import React, { useState, useEffect, useRef } from "react";
-import { ref, listAll, getDownloadURL } from "firebase/storage";
-import { storage } from "../../firebaseConfig";
-
-import Navbar from "../components/navbar.jsx";
-
-const Photos = () => {
-    const artists = [
-        { name: "Artista 1" },
-        { name: "Artista 2" },
-        { name: "Artista 3" },
-        { name: "Artista 4" },
-        { name: "Artista 5" },
-        { name: "Artista 6" },
-        { name: "Artista 1" },
-        { name: "Artista 2" },
-        { name: "Artista 3" },
-        { name: "Artista 4" },
-        { name: "Artista 5" },
-        { name: "Artista 6" },
-    ];
-
-    const [images, setImages] = useState([]);
-    const carouselRef = useRef(null);
-    const [isPaused, setIsPaused] = useState(false);
-    const speed = 10;
-
-    useEffect(() => {
-        const fetchImages = async () => {
-        try {
-            const imagesRef = ref(storage, "images/");
-            const res = await listAll(imagesRef);
-            const urls = await Promise.all(res.items.map((item) => getDownloadURL(item)));
-            setImages(urls);
-        } catch (error) {
-            console.error("Error al obtener imágenes:", error.message);
-        }};
-
-        fetchImages();
-    }, []);
-
-    useEffect(() => {
-        let interval;
-        if (!isPaused && carouselRef.current) {
-            const scroll = () => {
-                carouselRef.current.scrollLeft += 1;
-            if (
-            carouselRef.current.scrollLeft >=
-            carouselRef.current.scrollWidth - carouselRef.current.clientWidth
-            ) {
-                carouselRef.current.scrollLeft = 0;
-            }};
-            interval = setInterval(scroll, speed);
-        }
-
-        return () => clearInterval(interval);
-    }, [isPaused]);
-
-    return (
-        <>
-        <Navbar />
-        <div className="h-[83vh] w-screen flex items-center">
-            <div
-            className="relative overflow-hidden w-screen group"
-            ref={carouselRef}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            >
-            <div className="flex flex-row justify-center space-x-4"
-            >
-                {[...images, ...images, ...images, ...images].map((image, index) => (
-                <div
-                    key={index}
-                    className="flex flex-col min-w-80 px-10 font-montserrat pb-14 hover:scale-125 hover:transition-all"
-                >
-                    <img
-                    src={image}
-                    alt={`Carrusel ${index}`}
-                    className="w-auto object-cover transition-transform transform pt-14"
-                    />
-                    <div className="flex flex-row items-center justify-between">
-                    <p className="text-xl">TITLE PROJECT</p>
-                    <p className="text-xs font-mono">10.5.24</p>
-                    </div>
-                    <p>Artist name</p>
-                </div>
-                ))}
-            </div>
-            </div>
-        </div>
-
-        <div className="overflow-hidden flex">
-            <ul className="flex gap-10 text-black py-4 animate-infinite-scroll">
-                {[...artists, ...artists, ...artists].map((artist) => {
-                return (
-                    <li className="flex gap-2 items-center min-w-24"><p className="text-black font-mono">{artist.name}</p></li>
-                )
-                })}
-            </ul>
-        </div>
-        </>
-    );
-};
-
-export default Photos;
-
-*/
