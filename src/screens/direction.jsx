@@ -102,15 +102,15 @@ const Photos = () => {
         if (!touchStart || !carouselRef.current) return;
 
         const currentTouch = e.touches[0].clientX;
-        const diff = (touchStart - currentTouch) / 3; // Factor de desaceleración
+        const diff = (touchStart - currentTouch) / 2; 
         carouselRef.current.scrollBy({
             left: diff,
         });
-        setTouchStart(currentTouch); // Actualiza la posición táctil
+        setTouchStart(currentTouch);
     };
 
     const handleTouchEnd = () => {
-        setTouchStart(null); // Restablece el estado táctil
+        setTouchStart(null);
     };
 
     useEffect(() => {
@@ -174,7 +174,7 @@ const Photos = () => {
                         {[...items, ...items, ...items, ...items].map((item, index) => (
                             <div
                                 key={`${item.id}-${index}`}
-                                className="flex flex-col min-w-[400px] px-10 font-montserrat mb-14 mt-10 hover:scale-125 hover:transition-all"
+                                className="flex flex-col min-w-[400px] px-10 font-montserrat mb-14 mt-10 lg:hover:scale-125 hover:transition-all"
                                 onClick={() => handleItemClick(item)}
                             >
                                 <img
@@ -207,7 +207,7 @@ const Photos = () => {
                 </button>
             </div>
 
-            <div className="overflow-hidden flex">
+            <div className="overflow-hidden flex border border-red-500">
                 <ul className="flex gap-10 text-black py-4 animate-infinite-scroll">
                     {[...artists, ...artists, ...artists, ...artists].map(
                         (artist, index) => (

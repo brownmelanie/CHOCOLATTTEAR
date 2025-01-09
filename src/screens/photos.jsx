@@ -194,7 +194,7 @@ const Photos = () => {
                 {/* Botón izquierdo */}
                 <button 
                     onClick={scrollLeft}
-                    className="absolute left-4 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors z-50 hidden lg:block"
+                    className="absolute left-4 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors z-50 block"
                     aria-label="Scroll left"
                 >
                     <ChevronLeft className="w-6 h-6" />
@@ -236,7 +236,7 @@ const Photos = () => {
                 {/* Botón derecho */}
                 <button 
                     onClick={scrollRight}
-                    className="absolute right-4 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors hidden lg:block"
+                    className="absolute right-4 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors block"
                     aria-label="Scroll right"
                 >
                     <ChevronRight className="w-6 h-6" />
