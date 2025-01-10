@@ -68,21 +68,21 @@ const Prints = () => {
                     {/* Botones de navegación */}
                     <button 
                         onClick={handlePrevious}
-                        className="absolute left-4 p-2 bg-white/80 rounded-full shadow-md hover:bg-white transition-colors"
+                        className="absolute left-2 p-2 bg-white/80 rounded-full shadow-md hover:bg-white transition-colors z-30"
                     >
-                        <ChevronLeft size={24} />
+                        <ChevronLeft size={15} />
                     </button>
                     <button 
                         onClick={handleNext}
-                        className="absolute right-4 p-2 bg-white/80 rounded-full shadow-md hover:bg-white transition-colors"
+                        className="absolute right-2 p-2 bg-white/80 rounded-full shadow-md hover:bg-white transition-colors z-30"
                     >
-                        <ChevronRight size={24} />
+                        <ChevronRight size={15} />
                     </button>
 
-                    <div className="relative w-full flex justify-center items-center">
+                    <div className="relative w-full flex justify-center items-center ">
                         <div
                             className={`
-                                transform transition-all duration-300 ease-in-out
+                                transform transition-all duration-300 ease-in-out 
                                 ${isTransitioning ? 'opacity-0' : 'opacity-100'}
                             `}
                         >
@@ -100,7 +100,7 @@ const Prints = () => {
             </div>
 
             <div className="flex justify-center items-center">
-                <div className="w-[55%] h-[1px] bg-black mb-10"></div>
+                <div className="w-[55%] h-[1px] bg-black my-10"></div>
             </div>
 
             <div className="flex flex-col px-10 w-screen font-montserrat">
