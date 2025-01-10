@@ -193,7 +193,7 @@ const Photos = () => {
     return (
         <div className="h-[100svh] overflow-y-hidden ">
             <Navbar />
-            <div className="lg:h-[83vh] w-screen flex items-center">
+            <div className="h-[80vh] lg:h-[83vh] w-screen flex items-center">
                 {/* Botón izquierdo */}
                 <button 
                     onClick={scrollLeft}
