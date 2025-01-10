@@ -31,7 +31,7 @@ const Photos = () => {
         if (!touchStart) return;
     
         const currentTouch = e.touches[0].clientX;
-        const diff = (touchStart - currentTouch) / 2;
+        const diff = touchStart - currentTouch;
     
         if (carouselRef.current) {
             carouselRef.current.scrollBy({

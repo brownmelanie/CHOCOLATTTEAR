@@ -84,11 +84,11 @@ const ScrollText = () => {
         <div className="hidden lg:font-jost lg:text-[#252525] lg:flex lg:flex-col lg:items-center lg:justify-center lg:h-[80vh]">
             <div>
             <div className="lg:flex lg:flex-col lg:items-end">
-                <h2 className="font-bold text-8xl mr-36">CHOCÖLATTE</h2>
-                <h2 className="font-bold text-8xl mr-[10px]">TEAR</h2>
+                <h2 className="lg:text-[7rem] xl:text-[9rem] font-bold leading-3 mr-36 xl:mr-48">CHOCÖLATTE</h2>
+                <h2 className="lg:text-[7rem] xl:text-[9rem] font-bold mr-[-10px]">TEAR</h2>
             </div>
             
-            <p className="text-xl font-light mt-[-55px] ml-32 blink_me">
+            <p className="text-2xl font-light mt-[-85px] xl:mt-[-100px] ml-60 blink_me">
                 {texts[currentIndex]}
             </p>
             </div> 
