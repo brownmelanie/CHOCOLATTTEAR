@@ -191,7 +191,7 @@ const Photos = () => {
     }, [isPaused]);
 
     return (
-        <div className="relative h-screen w-screen overflow-y-hidden">
+        <div className="h-screen overflow-y-hidden">
             <Navbar />
             <div className="h-[83vh] w-screen flex items-center">
                 {/* Botón izquierdo */}
