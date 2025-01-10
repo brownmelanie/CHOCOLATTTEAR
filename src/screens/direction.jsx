@@ -191,7 +191,7 @@ const Photos = () => {
     }, [isPaused]);
 
     return (
-        <>
+        <div className="relative h-screen w-screen overflow-y-hidden">
             <Navbar />
             <div className="h-[83vh] w-screen flex items-center">
                 {/* Botón izquierdo */}
@@ -213,7 +213,7 @@ const Photos = () => {
                         {[...items, ...items, ...items, ...items].map((item, index) => (
                             <div
                                 key={`${item.id}-${index}`}
-                                className="flex flex-col min-w-[400px] px-10 font-montserrat mb-14 mt-10 hover:scale-125 hover:transition-all"
+                                className="flex flex-col min-w-[400px] px-10 font-montserrat mb-14 mt-10 lg:hover:scale-125 hover:transition-all"
                                 onClick={() => handleItemClick(item)}
                             >
                                 <img
@@ -256,7 +256,7 @@ const Photos = () => {
                 </ul>
             </div>
             <FloatingButton/>
-        </>
+        </div>
     );
 };
 
