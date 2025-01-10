@@ -190,14 +190,14 @@ const Photos = () => {
     return (
         <>
             <Navbar />
-            <div className="lg:h-[83vh] w-screen flex items-center relative">
+            <div className="h-[83vh] w-screen flex items-center">
                 {/* Botón izquierdo */}
                 <button 
                     onClick={scrollLeft}
-                    className="absolute left-4 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors z-50 block"
+                    className="absolute left:1 lg:left-4 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors z-50 block"
                     aria-label="Scroll left"
                 >
-                    <ChevronLeft className="w-6 h-6" />
+                    <ChevronLeft className="w-2 h-2 lg:w-6 lg:h-6" />
                 </button>
 
                 <div
@@ -236,14 +236,14 @@ const Photos = () => {
                 {/* Botón derecho */}
                 <button 
                     onClick={scrollRight}
-                    className="absolute right-4 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors block"
+                    className="absolute right-1 lg:right-4 bg-white/80 p-2 rounded-full shadow-lg hover:bg-white transition-colors block"
                     aria-label="Scroll right"
                 >
-                    <ChevronRight className="w-6 h-6" />
+                    <ChevronRight className="w-2 h-2 lg:w-6 lg:h-6" />
                 </button>
             </div>
 
-            <div className="overflow-hidden flex">
+            <div className="overflow-hidden hidden lg:flex">
                 <ul className="flex gap-10 text-black py-4 animate-infinite-scroll">
                     {[...artists, ...artists, ...artists].map((artist, index) => (
                         <li key={`${artist.id}-artist-${index}`} className="flex gap-2 items-center text-[1.3vw] whitespace-nowrap">
