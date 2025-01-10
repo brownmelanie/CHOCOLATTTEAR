@@ -62,19 +62,23 @@ const Prints = () => {
 
     return (
         <>
-            <div className="h-[100svh]">
+            <div className='hidden lg:flex h-screen items-center justify-center'>
+                <h1 className='hidden lg:block'>DESKTOP DEV, MOBILE READY</h1>
+            </div>
+            
+            <div className="h-[100svh] lg:hidden">
                 <Navbar />
                 <div className="flex flex-col px-10 justify-center items-center w-screen h-[90svh] relative">
                     {/* Botones de navegación */}
                     <button 
                         onClick={handlePrevious}
-                        className="absolute left-2 p-2 bg-white/80 rounded-full shadow-md hover:bg-white transition-colors z-30"
+                        className="absolute left-1 p-2 bg-white/80 rounded-full shadow-md hover:bg-white transition-colors z-30"
                     >
                         <ChevronLeft size={15} />
                     </button>
                     <button 
                         onClick={handleNext}
-                        className="absolute right-2 p-2 bg-white/80 rounded-full shadow-md hover:bg-white transition-colors z-30"
+                        className="absolute right-1 p-2 bg-white/80 rounded-full shadow-md hover:bg-white transition-colors z-30"
                     >
                         <ChevronRight size={15} />
                     </button>
@@ -99,11 +103,11 @@ const Prints = () => {
                 </div>
             </div>
 
-            <div className="flex justify-center items-center">
+            <div className="lg:hidden flex justify-center items-center">
                 <div className="w-[55%] h-[1px] bg-black my-10"></div>
             </div>
 
-            <div className="flex flex-col px-10 w-screen font-montserrat">
+            <div className="lg:hidden flex flex-col px-10 w-screen font-montserrat">
                 <h4 className="font-semibold text-xl uppercase">
                     {currentPrint.camera}
                 </h4>
