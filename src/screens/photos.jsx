@@ -188,9 +188,9 @@ const Photos = () => {
     }, [isPaused]);
 
     return (
-        <>
+        <div className="h-[100svh] overflow-y-hidden ">
             <Navbar />
-            <div className="h-[83vh] w-screen flex items-center">
+            <div className="lg:h-[83vh] w-screen flex items-center">
                 {/* Botón izquierdo */}
                 <button 
                     onClick={scrollLeft}
@@ -253,7 +253,7 @@ const Photos = () => {
                 </ul>
             </div>
             <FloatingButton/>
-        </>
+        </div>
     );
 };
 
