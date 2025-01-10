@@ -87,11 +87,11 @@ const Prints = () => {
                             `}
                         >
                             <img
-                                className="max-w-[500px] max-h-[75vh] rounded-sm shadow-md"
+                                className="max-w-[500px] max-h-[65vh] rounded-sm shadow-md"
                                 src={currentPrint.url}
                                 alt={currentPrint.title}
                             />
-                            <h3 className="font-montserrat font-semibold text-3xl pt-2 uppercase text-center">
+                            <h3 className="font-montserrat font-semibold text-3xl pt-5 uppercase text-center">
                                 {currentPrint.title}
                             </h3>
                         </div>
