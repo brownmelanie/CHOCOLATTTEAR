@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import OptimizedImage from './OptimizedImage';
+import ImageWithSkeleton from './ImageWithSkeleton';
 
 const ImageCarousel = ({ images, onImageClick }) => {
   const carouselRef = useRef(null);
@@ -113,7 +114,7 @@ const ImageCarousel = ({ images, onImageClick }) => {
 
       <div
         ref={carouselRef}
-        className="relative overflow-hidden w-screen"
+        className="relative h-[100%] w-screen overflow-hidden pt-10"
         onWheel={handleScroll}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -125,15 +126,15 @@ const ImageCarousel = ({ images, onImageClick }) => {
           onMouseLeave={() => setIsPaused(false)}
         >
           {[...images, ...images, ...images, ...images].map((image, index) => (
-            <OptimizedImage
-              key={`${image.id}-${index}`}
-              url={image.url}
-              alt={image.title || `Carrusel ${index}`}
-              title={image.title}
-              date={image.date}
-              artist={image.artist}
-              onClick={() => onImageClick(image)}
-            />
+            <ImageWithSkeleton
+            key={`${image.id}-${index}`}
+            url={image.url}
+            alt={image.title || `Carrusel ${index}`}
+            title={image.title}
+            date={image.date}
+            artist={image.artist}
+            onClick={() => onImageClick(image)}
+          />
           ))}
         </div>
       </div>
