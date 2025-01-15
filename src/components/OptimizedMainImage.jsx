@@ -50,19 +50,15 @@ const OptimizedCollageImage = ({
     >
       {/* Skeleton loader */}
       {!isLoaded && (
-        <div className={`w-full overflow-hidden rounded-lg ${
-          index % 2 === 0 ? 'aspect-w-4 aspect-h-3' : 'aspect-w-3 aspect-h-4'
-        }`}>
-          <div className="w-full h-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
-          </div>
+        <div className="absolute inset-0 overflow-hidden rounded-lg">
+        <div className="w-full h-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
         </div>
+      </div>
       )}
 
       {/* Imagen del collage */}
-      <div className={`overflow-hidden rounded-lg ${
-        index % 2 === 0 ? 'aspect-w-4 aspect-h-3' : 'aspect-w-3 aspect-h-4'
-      }`}>
+      <div className={`overflow-hidden rounded-lg w-full h-full`}>
         <img
           src={image.url}
           alt={`Collage image ${index + 1}`}

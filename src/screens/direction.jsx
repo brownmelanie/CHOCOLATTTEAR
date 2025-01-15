@@ -225,7 +225,7 @@ const Photos = () => {
                                             : item.url
                                     }
                                     alt={item.title || `Carrusel ${index}`}
-                                    className="w-auto object-cover transition-transform transform"
+                                    className="w-auto object-cover transition-transform transform rounded-lg"
                                 />
                                 <div className="flex flex-row items-center justify-between">
                                     <p className="text-xl">{item.title || ""}</p>
