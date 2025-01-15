@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
-import Navbar from '../components/navbar';
 import { motion } from 'framer-motion';
-import Loader from '../components/loader';
+import Navbar from '../components/navbar';
+import { OptimizedMainImage, OptimizedCollageImage } from '../components/OptimizedMainImage';
 
 const PhotoDetails = () => {
     const { id } = useParams();
@@ -42,9 +42,7 @@ const PhotoDetails = () => {
 
                 if (currentImage) {
                     await preloadImage(currentImage.url);
-                }
-
-                if (currentImage) {
+                    
                     const collageRef = collection(db, "Photography", id, "collage");
                     const collageSnap = await getDocs(collageRef);
                     const collageData = collageSnap.docs.map(doc => ({
@@ -53,15 +51,17 @@ const PhotoDetails = () => {
                     }));
                     setCollageImages(collageData);
 
-                    collageData.slice(0, 2).forEach(image => {
-                        preloadImage(image.url);
-                    });
+                    // Precargar las primeras imágenes del collage
+                    for (const image of collageData.slice(0, 2)) {
+                        await preloadImage(image.url);
+                    }
 
+                    // Precargar el resto de imágenes después
                     setTimeout(() => {
                         collageData.slice(2).forEach(image => {
                             preloadImage(image.url);
                         });
-                    }, 1000);
+                    }, 10);
                 }
 
                 setLoading(false);
@@ -74,14 +74,6 @@ const PhotoDetails = () => {
         fetchImageAndCollage();
     }, [id, mainImage]);
 
-    const closeModal = () => setSelectedImage(null);
-
-    if (loading) {
-        return (
-            <Loader/>
-        );
-    }
-
     if (!mainImage) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -92,34 +84,18 @@ const PhotoDetails = () => {
 
     return (
         <>
-        <Navbar />
-        
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-        >
-            
-            <div className="container mx-auto px-4 py-8 font-montserrat">
-                <motion.div
-                    className="max-w-4xl mx-auto mb-8"
-                    initial={{ y: 20 }}
-                    animate={{ y: 0 }}
-                    transition={{ delay: 0.2 }}
-                >
-                    {!loadedImages[mainImage?.url] && (
-                        <div className="w-full h-[70vh] animate-pulse bg-gray-200" />
-                    )}
-                    <img
-                        src={mainImage.url}
-                        alt={mainImage.title}
-                        className={`w-full max-h-screen object-cover shadow-lg transition-opacity duration-300 ${
-                            loadedImages[mainImage?.url] ? 'opacity-100' : 'opacity-0'
-                        }`}
-                        loading="eager"
-                    />
-                </motion.div>
+            <Navbar />
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="container mx-auto px-4 py-8 font-montserrat"
+            >
+                <OptimizedMainImage 
+                    image={mainImage}
+                    isLoaded={loadedImages[mainImage.url]}
+                />
 
                 <motion.div
                     className="max-w-4xl mx-auto mb-12"
@@ -144,63 +120,40 @@ const PhotoDetails = () => {
                         animate={{ y: 0 }}
                         transition={{ delay: 0.4 }}
                     >
-                        <div className="grid grid-cols-1 md:grid-cols-2  gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {collageImages.map((image, index) => (
-                                <motion.div
+                                <OptimizedCollageImage
                                     key={image.id}
-                                    className="group cursor-pointer"
+                                    image={image}
+                                    index={index}
+                                    isLoaded={loadedImages[image.url]}
                                     onClick={() => setSelectedImage(image)}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.5 + index * 0.1 }}
-                                >
-                                    {!loadedImages[image.url] && (
-                                        <div className={`w-full animate-pulse bg-gray-200 ${
-                                            index % 2 === 0 ? 'aspect-w-4 aspect-h-3' : 'aspect-w-3 aspect-h-4'
-                                        }`} />
-                                    )}
-                                    <div
-                                        className={`overflow-hidden ${index % 2 === 0 ? 'aspect-w-4 aspect-h-3' : 'aspect-w-3 aspect-h-4'}`}
-                                    >
-                                        <img
-                                            src={image.url}
-                                            alt={`${mainImage.title} - ${index + 1}`}
-                                            className={`w-full h-full object-cover transition-opacity duration-300 ${
-                                                loadedImages[image.url] ? 'opacity-100' : 'opacity-0'
-                                            }`}
-                                            loading="lazy"
-                                            onLoad={() => setLoadedImages(prev => ({...prev, [image.url]: true}))}
-                                        />
-                                    </div>
-                                </motion.div>
+                                />
                             ))}
                         </div>
                     </motion.div>
                 )}
-            </div>
 
-            {selectedImage && (
-            <div
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-                onClick={closeModal}
-            >
-                <div
-                    className="rounded shadow-lg max-w-lg w-full relative"
-                    onClick={(e) => e.stopPropagation()}
-                >
-                <img
-                    src={selectedImage.url}
-                    alt="Imagen ampliada"
-                    className="w-full h-auto object-contain"
-                />
-            </div>
-    </div>
-)}
-
-        </motion.div>
+                {selectedImage && (
+                    <div
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
+                        onClick={() => setSelectedImage(null)}
+                    >
+                        <div
+                            className="relative max-w-4xl w-full mx-4"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <img
+                                src={selectedImage.url}
+                                alt="Imagen ampliada"
+                                className="max-w-screen max-h-screen w-full h-auto object-contain p-5"
+                            />
+                        </div>
+                    </div>
+                )}
+            </motion.div>
         </>
     );
-    
 };
 
 export default PhotoDetails;

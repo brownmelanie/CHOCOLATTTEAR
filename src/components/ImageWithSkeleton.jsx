@@ -7,18 +7,11 @@ const ImageWithSkeleton = ({
   date, 
   artist, 
   onClick,
-  aspectRatio = '3/4' // Podemos ajustar esto según tus necesidades
 }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(false);
 
   const handleLoad = useCallback(() => {
     setIsLoading(false);
-  }, []);
-
-  const handleError = useCallback(() => {
-    setIsLoading(false);
-    setError(true);
   }, []);
 
   return (
@@ -26,33 +19,33 @@ const ImageWithSkeleton = ({
       className="flex flex-col min-w-[380px] px-10 font-montserrat pb-12 pt-12 lg:hover:scale-125 hover:transition-all cursor-pointer"
       onClick={onClick}
     >
-      <div 
-        className="flex flex-col justify-center"
-        style={{ aspectRatio }}
-      >
+      <div className="relative w-full h-[400px] flex items-center justify-center">
         {/* Skeleton loader */}
         {isLoading && (
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse rounded-lg">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+          <div className="absolute inset-0 overflow-hidden rounded-lg">
+            <div className="w-full h-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+            </div>
           </div>
         )}
         
         {/* Imagen real */}
-        <img
-          src={url}
-          alt={alt}
-          className={`w-full max-h-[400px] object-cover transition-all duration-300 rounded-lg ${
-            isLoading ? 'opacity-0' : 'opacity-100'
-          }`}
-          onLoad={handleLoad}
-          onError={handleError}
-          loading="lazy"
-          draggable="false"
-        />
+        <div className="relative w-full h-full flex items-center justify-center">
+          <img
+            src={url}
+            alt={alt}
+            className={`max-w-full max-h-full w-auto h-auto object-contain rounded-lg transition-opacity duration-300 ${
+              isLoading ? 'opacity-0' : 'opacity-100'
+            }`}
+            onLoad={handleLoad}
+            loading="lazy"
+            draggable="false"
+          />
+        </div>
       </div>
 
       {/* Metadata */}
-      <div className={`mt-2 transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
+      <div className={`mt-2 mx-4 transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
         <div className="flex flex-row items-center justify-between">
           <p className="text-xl">{title || ""}</p>
           <p className="text-xs font-mono">{date || ""}</p>
